@@ -3,13 +3,12 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const userMethods = UserAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -23,17 +22,24 @@ const LoginForm = () => {
   }
 
   return (
-    <Box sx={{ margin: "auto" }}>
-      {error && error}
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+      }}
+    >
       <Box
         display={"flex"}
         flexDirection={"column"}
         gap={2}
         paddingBottom={2}
         component={"form"}
-        autoComplete={true}
         onSubmit={handleLogin}
+        sx={{ backgroundColor: "primary.main", padding: 5, borderRadius: 1 }}
       >
+        {error && error}
         <TextField
           placeholder="E-mail"
           type="email"
@@ -49,9 +55,9 @@ const LoginForm = () => {
         <Button
           variant="contained"
           type="submit"
+          color="secondary"
           disabled={!email || !password}
           sx={{ padding: 1.1 }}
-          z
         >
           Entrar
         </Button>

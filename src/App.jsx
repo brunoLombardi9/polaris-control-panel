@@ -3,26 +3,37 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext";
 import LoginForm from "./components/LoginForm";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ControlPanel from "./components/ControlPanel";
+import UploadTattooForm from "./components/UploadTattooForm";
+import ThemeContext from "./components/ThemeContext";
 import { Container } from "@mui/material";
+import UploadGalleryForm from "./components/UploadGalleryForm";
 
 const App = () => {
   return (
     <BrowserRouter>
       <AuthContextProvider>
-        <Container flex sx={{ justifyContent: "center", alignItems: "center" }}>
-          <Routes>
-            <Route path="/login" element={<LoginForm />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <ControlPanel />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Container>
+        <ThemeContext>
+          <Container
+            maxWidth={false}
+            sx={{
+              backgroundColor: "black",
+              height: "100vh",
+            }}
+          >
+            <Routes>
+              <Route path="/login" element={<LoginForm />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    {/* <UploadTattooForm /> */}
+                    <UploadGalleryForm />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Container>
+        </ThemeContext>
       </AuthContextProvider>
     </BrowserRouter>
   );

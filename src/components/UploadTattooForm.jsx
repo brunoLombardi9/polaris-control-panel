@@ -2,29 +2,24 @@ import {
   Box,
   Button,
   Container,
-  FormControl,
   Input,
   InputLabel,
   MenuItem,
   Select,
+  TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 import {
-  collectionOptions,
   tattoosCategories,
-  galleryCategories,
 } from "../constants";
 
-const ControlPanel = () => {
+const UploadTattooForm = () => {
   const [title, setTitle] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState(
-    collectionOptions[0]
-  );
   const [categoriesOptions, setCategoriesOptions] = useState(tattoosCategories);
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesOptions[0]
@@ -43,10 +38,7 @@ const ControlPanel = () => {
 
     const uploadTasks = await Promise.all(
       selectedFiles.map((file) =>
-        uploadBytes(
-          ref(storage, `${selectedCollection}/${title}/${file.name}`),
-          file
-        )
+        uploadBytes(ref(storage, `tattoos/${title}/${file.name}`), file)
       )
     );
 
@@ -54,10 +46,10 @@ const ControlPanel = () => {
 
     // Guardar información en la colección 'tattoo'
     const storagePaths = selectedFiles.map(
-      (file) => `${selectedCollection}/${title}/${file.name}`
+      (file) => `tattoos/${title}/${file.name}`
     );
 
-    await addDoc(collection(db, selectedCollection), {
+    await addDoc(collection(db, "tattoos"), {
       title,
       category: selectedCategory,
       images: storagePaths,
@@ -69,50 +61,45 @@ const ControlPanel = () => {
     setSelectedFiles([]);
   }
 
-  useEffect(() => {
-    selectedCollection === collectionOptions[0]
-      ? setCategoriesOptions(tattoosCategories)
-      : setCategoriesOptions(galleryCategories);
-  }, [selectedCollection]);
-
   return (
-    <Container>
-      <FormControl>
-        <InputLabel>Colección</InputLabel>
+    <Container
+      sx={{
+        display:"flex",
+        backgroundColor: "primary.main",
+        padding: 2,
+        borderRadius: 2,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        component={"form"}
+        sx={{ flexDirection: "column", width: "100%" }}
+        onSubmit={handleSubmit}
+      >
+        <InputLabel>Categoría</InputLabel>
+
         <Select
-          value={selectedCollection}
-          onChange={(e) => setSelectedCollection(e.target.value)}
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
           required
         >
-          {collectionOptions.map((option) => (
+          {categoriesOptions.map((option) => (
             <MenuItem value={option} key={option}>
               {option}
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
 
-      <Box component={"form"} flex onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <FormControl>
-          <InputLabel>Categoría</InputLabel>
-          <Select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+        <Box>
+          <InputLabel>Título</InputLabel>
+          <TextField
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
-          >
-            {categoriesOptions.map((option) => (
-              <MenuItem value={option} key={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          />
+        </Box>
 
         <Input
           type="file"
@@ -133,4 +120,4 @@ const ControlPanel = () => {
   );
 };
 
-export default ControlPanel;
+export default UploadTattooForm;
